@@ -36,6 +36,10 @@ module Rack
   #
   #     File path or file object to write log to
   #
+  #   :auto_flush
+  #
+  #     Will flush file to disk on every write
+  #
   class JsonLogs
 
     def initialize(app, options={})
@@ -44,6 +48,7 @@ module Rack
         reraise_exceptions: false,
         pretty_print: false,
         print_options: { trace: true },
+        auto_flush: true,
       }.merge(options)
       @options[:from] ||= Socket.gethostname
       @file = @options[:file] || $stdout
@@ -92,6 +97,7 @@ module Rack
       else
         @file.puts(log.to_json)
       end
+      @file.flush if @options[:auto_flush]
 
       raise exception if exception && @options[:reraise_exceptions]
 
