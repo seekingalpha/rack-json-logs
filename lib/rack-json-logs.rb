@@ -42,8 +42,8 @@ module Rack
       @app = app
       @options = {
         reraise_exceptions: false,
-        pretty_print:       false,
-        print_options:      {trace: true},
+        pretty_print: false,
+        print_options: { trace: true },
       }.merge(options)
       @options[:from] ||= Socket.gethostname
       @file = @options[:file] || $stdout
@@ -68,13 +68,15 @@ module Rack
       $stderr = previous_stderr; $stdout = previous_stdout
 
       log = {
-        time:     start_time.to_i,
+        ts: start_time.to_i,
         duration: (Time.now - start_time).round(3),
-        request:  "#{env['REQUEST_METHOD']} #{env['PATH_INFO']}",
-        status:   (response || [500]).first,
-        from:     @options[:from],
-        stdout:   stdout_buffer.string,
-        stderr:   stderr_buffer.string
+        request_method: env['REQUEST_METHOD'],
+        request: env['PATH_INFO'],
+        query_string: env['QUERY_STRING'],
+        status: response&.first || 500,
+        from: @options[:from],
+        stdout: stdout_buffer.string,
+        stderr: stderr_buffer.string,
       }
       log[:events] =  logger.events if logger.used
       if exception
@@ -97,8 +99,8 @@ module Rack
     end
 
     def response_500
-      [500, {'Content-Type' => 'application/json'},
-       [{status: 500, message: 'Something went wrong...'}.to_json]]
+      [500, { 'Content-Type' => 'application/json' },
+       [{ status: 500, message: 'Something went wrong...' }.to_json]]
     end
 
 
@@ -118,9 +120,9 @@ module Rack
       def log(type, value)
         @used = true
         @events << {
-          type:  type,
+          type: type,
           value: value,
-          time:  (Time.now - @start_time).round(3)
+          time: (Time.now - @start_time).round(3)
         }
       end
     end
