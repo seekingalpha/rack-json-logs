@@ -32,6 +32,10 @@ module Rack
   #     When :pretty_print is set to true, these options will be passed to the
   #     pretty-printer. Run `json-logs-pp -h` to see what the options are.
   #
+  #   :file
+  #
+  #     File path or file object to write log to
+  #
   class JsonLogs
 
     def initialize(app, options={})
@@ -42,6 +46,8 @@ module Rack
         print_options:      {trace: true},
       }.merge(options)
       @options[:from] ||= Socket.gethostname
+      @file = @options[:file] || $stdout
+      @file = ::File.open(@file, 'a') if @file.is_a?(String)
     end
 
     def call(env)
@@ -73,16 +79,16 @@ module Rack
       log[:events] =  logger.events if logger.used
       if exception
         log[:exception] = {
-          message:   exception.message,
-          backtrace: exception.backtrace
+          class: exception.class.name,
+          message: exception.message,
+          backtrace: exception.backtrace,
         }
       end
 
       if @options[:pretty_print]
-        JsonLogs.pretty_print(JSON.parse(log.to_json),
-                              STDOUT, @options[:print_options])
+        JsonLogs.pretty_print(JSON.parse(log.to_json), @file, @options[:print_options])
       else
-        STDOUT.puts(log.to_json)
+        @file.puts(log.to_json)
       end
 
       raise exception if exception && @options[:reraise_exceptions]
@@ -120,4 +126,3 @@ module Rack
     end
   end
 end
-
