@@ -80,6 +80,7 @@ module Rack
         query_string: env['QUERY_STRING'],
         status: response&.first || 500,
         from: @options[:from],
+        pid: Process.pid,
         stdout: stdout_buffer.string,
         stderr: stderr_buffer.string,
       }
