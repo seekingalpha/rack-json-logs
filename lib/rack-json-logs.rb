@@ -106,7 +106,7 @@ module Rack
     end
 
     def response_500
-      [500, { 'Content-Type' => 'application/json' },
+      [500, { 'content-type' => 'application/json' },
        [{ status: 500, message: 'Something went wrong...' }.to_json]]
     end
 

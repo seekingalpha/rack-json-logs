@@ -11,5 +11,5 @@ run ->(env) do
   env[:logger].log(:event, 'something awesome happened')
   $stderr.puts "bye world"
   raise "exception on purpose"
-  [200, {'Content-Type' => 'text/html'}, ['Hello Rack!']]
+  [200, {'content-type' => 'text/html'}, ['Hello Rack!']]
 end

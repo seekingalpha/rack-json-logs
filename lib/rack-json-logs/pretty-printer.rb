@@ -34,7 +34,7 @@ module Rack
       out.puts "Request: #{json['request']}".cyan
       out.puts resp.send(status_color)
       out.puts "From: #{json['from']}".cyan if opts[:from] && json['from']
-      out.puts "At: #{Time.at(json['time']).strftime('%b %-e %Y, %-l:%M%P')}"
+      out.puts "At: #{Time.at(json['ts']).strftime('%b %-e %Y, %-l:%M%P')}"
       out.puts
 
       %w{stdout stderr}.each do |b|
@@ -55,7 +55,7 @@ module Rack
         out.puts
         json['events'].each do |e|
           out.puts "Event: #{e['type']}"
-          out.puts "At: #{(e['time']*1000).round}ms"
+          out.puts "At: #{(e['ts']*1000).round}ms"
           out.puts "Value: #{e['value'].to_json}"
           out.puts
         end
